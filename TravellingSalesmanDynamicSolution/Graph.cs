@@ -13,6 +13,19 @@ public class Graph
         ClearWeights();
     }
 
+    public void RandomWeights()
+    {
+        Random rnd = new Random();
+        for (int i = 0; i < vertexNum; i++)
+        {
+            for (int j = i + 1; j < vertexNum; j++)
+            {
+                if(i == j){continue;}
+                SetEdge(i,j,rnd.Next(1,10) * 5);
+            }
+        }
+    }
+
     public int GetVertexNum() { return vertexNum; }
     public int[,] GetAdjacencyMatrix() { return _adjacencyMatrix; }
 
