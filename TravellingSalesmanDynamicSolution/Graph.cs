@@ -32,7 +32,7 @@ public class Graph
         {
             for (int j = 0; j < this.vertexNum; j++)
             {
-                _adjacencyMatrix[i, j] = 0;
+                _adjacencyMatrix[i, j] = 600;
             }
         }
     }

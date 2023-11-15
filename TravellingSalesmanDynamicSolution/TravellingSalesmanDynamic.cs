@@ -15,76 +15,152 @@ public class TravellingSalesmanDynamic
 
 
     private int visited_all;
-    private int[,] memo, matrix;
+    private int[,] memo, matrix, next;
     private int n;
+    private int startIndex;
 
-    public int DynamicTravellingSalesman(int startIndex, int[,] graph)
+    private int stepChecker = 0;
+
+    public int TravellingSalesman(int startIndex, int[,] graph)
     {
+        stepChecker = 0;
         if (startIndex >= graph.GetLength(0) || startIndex < 0) { return int.MaxValue;}
 
+        this.startIndex = startIndex;
         n = graph.GetLength(0);
         Console.WriteLine($"Vertices: {n}");
-        visited_all = (1 << n) - 1;
         
-        memo = new int[n, (int)Math.Pow(2,n)];
+        visited_all = (1 << n) - 1;
+        memo = new int[(int)Math.Pow(2,n), n];
+        next = new int[(int)Math.Pow(2,n), n];
         matrix = graph;
+        
+        //Initialise Memo
         for (int i = 0; i < n; i++)
         {
             for (int j = 0; j < (int)Math.Pow(2, n); j++)
             {
-                memo[i, j] = int.MaxValue;
+                memo[j, i] = int.MaxValue;
+                next[j, i] = int.MaxValue;
             }
         }
         
-        //for(int i = 1)
-
         return TSP((1 << startIndex), startIndex);
     }
-
-    /// <summary>
-    /// Cache the optimal solution from the start node to every other node
-    /// </summary>
-    /// <param name="matrix"></param>
-    /// <param name="memo"></param>
-    /// <param name="n"></param>
-    /// <param name="startIndex"></param>
-    private void Setup(int[,] matrix, int[,] memo, int n, int startIndex)
+    public int DynamicTravellingSalesman(int startIndex, int[,] graph)
     {
+        stepChecker = 0;
+        if (startIndex >= graph.GetLength(0) || startIndex < 0) { return int.MaxValue;}
+
+        this.startIndex = startIndex;
+        n = graph.GetLength(0);
+        Console.WriteLine($"Vertices: {n}");
+        
+        visited_all = (1 << n) - 1;
+        memo = new int[(int)Math.Pow(2,n), n];
+        next = new int[(int)Math.Pow(2,n), n];
+        matrix = graph;
+        
+        //Initialise Memo
         for (int i = 0; i < n; i++)
         {
-            if(i == startIndex){continue;}
-
-            memo[i, 1 << startIndex | 1 << i] = matrix[startIndex, i]; //set (bitwise logical of leftshift startindex & leftshift i) to edgeweight of startindex,i (optimal value)
+            for (int j = 0; j < (int)Math.Pow(2, n); j++)
+            {
+                memo[j, i] = int.MaxValue;
+                next[j, i] = int.MaxValue;
+            }
         }
+
+        return TSP_Dynamic((1 << startIndex), startIndex);
     }
     
     //NEW
 
-    int TSP(int mask, int pos)
+    private int TSP(int mask, int pos)
     {
-        Console.WriteLine($"{visited_all}_{mask}");
+        stepChecker++;
         if (mask == visited_all)
         {
-            return matrix[pos,0]; //PATH TO OG
+            return matrix[pos,startIndex]; //PATH TO OG
         }
 
         int ans = int.MaxValue;
-        
-        Console.WriteLine($"{n}");
+        int index = -1;
+        //Console.WriteLine($"{n}");
         for (int vertex = 0; vertex < n; vertex++) //For each Vertex
         {
-            Console.WriteLine(vertex);
             if ((mask & (1 << vertex)) == 0) //IF Vertex not visited
             {
                 int newAns = matrix[pos, vertex] + TSP(mask | (1 << vertex), vertex);
-                ans = Math.Min(ans, newAns);
+                
+                if (newAns < ans)
+                {
+                    ans = newAns;
+                    index = vertex; 
+                }
             }
         }
 
+        next[mask, pos] = index; //keep track of next index so path can be rebuilt
         return ans;
     }
     
-    
+    private int TSP_Dynamic(int mask, int pos)
+    {
+        stepChecker++; //
+        if (mask == visited_all)
+        {
+            return matrix[pos,startIndex]; //PATH TO OG
+        }
+
+        if (memo[mask,pos] != int.MaxValue)
+        {
+            return memo[mask, pos];
+        }
+
+        int ans = int.MaxValue;
+        int index = -1;
+        
+        for (int vertex = 0; vertex < n; vertex++) //For each Vertex
+        {
+            if ((mask & (1 << vertex)) == 0) //IF Vertex not visited
+            {
+                int newAns = matrix[pos, vertex] + TSP_Dynamic(mask | (1 << vertex), vertex);
+                if (newAns < ans)
+                {
+                    ans = newAns;
+                    index = vertex; 
+                }
+            }
+        }
+        
+        next[mask, pos] = index; //keep track of next index so path can be rebuilt
+        return memo[mask, pos] = ans;
+    }
+
+    /// <summary>
+    /// Rebuild tour using saved next index
+    /// </summary>
+    /// <returns></returns>
+    public List<int> GetTour()
+    {
+        List<int> tour = new List<int>();
+        int index = startIndex;
+        int mask = 1 << startIndex;
+        while (true) {
+            tour.Add(index);
+            int nextIndex = next[mask,index];
+            if (nextIndex == int.MaxValue) break;
+            int nextMask = mask | (1 << nextIndex);
+            mask = nextMask;
+            index = nextIndex;
+        }
+        tour.Add(startIndex);
+
+        return tour;
+    }
+
+    public int GetStepChecker() { return stepChecker; }
     
     
     
