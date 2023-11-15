@@ -11,7 +11,10 @@ public class TravellingSalesmanDynamic
     //Dynamic: Compute the optimal solution for all the subpaths of length N
     //         while using information from the already known optimal partial tours of length N-1.
     //         Visited nodes as a bit field: 001001 if vertex 0 and 3 are visited
+    // Resources:
+    // https://www.geeksforgeeks.org/travelling-salesman-problem-using-dynamic-programming/?ref=header_search
     // https://www.youtube.com/watch?v=cY4HiiFHO1o&ab_channel=WilliamFiset
+    // https://www.youtube.com/watch?v=JE0JE8ce1V0&ab_channel=CodingBlocks
 
 
     private int visited_all;
