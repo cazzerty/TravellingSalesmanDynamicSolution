@@ -6,6 +6,10 @@ public class Graph
     private int[,] _adjacencyMatrix;
 
 
+    /// <summary>
+    /// Graph class containing functions to work with adjacency matrix
+    /// </summary>
+    /// <param name="vertexNum"></param>
     public Graph(int vertexNum)
     {
         this.vertexNum = vertexNum;
@@ -21,7 +25,7 @@ public class Graph
             for (int j = i + 1; j < vertexNum; j++)
             {
                 if(i == j){continue;}
-                SetEdge(i,j,rnd.Next(1,10) * 5);
+                SetEdge(i,j,rnd.Next(2,19) * 5);
             }
         }
     }
@@ -45,8 +49,29 @@ public class Graph
         {
             for (int j = 0; j < this.vertexNum; j++)
             {
-                _adjacencyMatrix[i, j] = 600;
+                _adjacencyMatrix[i, j] = int.MaxValue;
             }
+        }
+    }
+
+    public void GraphToStringOutput()
+    {
+        for (int i = 0; i < vertexNum; i++)
+        {
+            String output = "{";
+            for (int j = 0; j < vertexNum; j++)
+            {
+                String toAdd = "";
+                if (_adjacencyMatrix[i, j] == int.MaxValue) { toAdd = "__";}
+                else { toAdd = _adjacencyMatrix[i, j].ToString(); } 
+                output = output + toAdd;
+                if(j == vertexNum - 1){continue;}
+
+                output = output + ", ";
+
+            }
+            output = output + "}";
+            Console.WriteLine(output);
         }
     }
 }
