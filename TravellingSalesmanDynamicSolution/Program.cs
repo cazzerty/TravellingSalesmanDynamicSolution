@@ -200,4 +200,6 @@ for (int i = 3; i < citiesMax; i++)
 }
 
 Console.WriteLine("Testing Finished");
+Console.WriteLine("Press any key to close");
+Console.ReadKey();
 #endregion
